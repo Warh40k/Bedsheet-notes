@@ -2,10 +2,12 @@
 
 namespace frontend\controllers;
 
+use common\models\Notes;
 use frontend\models\ResendVerificationEmailForm;
 use frontend\models\VerifyEmailForm;
 use Yii;
 use yii\base\InvalidArgumentException;
+use yii\data\ActiveDataProvider;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
@@ -14,7 +16,6 @@ use common\models\LoginForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
-use frontend\models\ContactForm;
 
 /**
  * Site controller
@@ -73,11 +74,24 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionIndex()
-    {
-        return $this->render('index');
-    }
 
+    public function actionIndex($model=null)
+    {
+        $dataProvider = new ActiveDataProvider([
+            'query' => Notes::find()->andWhere(['created_by' => Yii::$app->user->id])->orderBy('created_at DESC')
+        ]);
+        if ($this->request->isPost && trim(Yii::$app->request->post('Notes')['text']) != "") {
+            $model = new Notes();
+            $model->text = Yii::$app->request->post('Notes')['text'] ;
+            $model->created_by = Yii::$app->user->id;
+            $model->created_at = date('Y-m-d H:i:s');
+            $model->save();
+        }
+
+        return $this->render('index', [
+            'dataProvider' => $dataProvider
+        ]);
+    }
     /**
      * Logs in a user.
      *
@@ -118,7 +132,7 @@ class SiteController extends Controller
      *
      * @return mixed
      */
-    public function actionContact()
+/*    public function actionContact()
     {
         $model = new ContactForm();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
@@ -134,7 +148,7 @@ class SiteController extends Controller
         return $this->render('contact', [
             'model' => $model,
         ]);
-    }
+    }*/
 
     /**
      * Displays about page.

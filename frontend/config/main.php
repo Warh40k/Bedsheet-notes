@@ -7,10 +7,11 @@ $params = array_merge(
 );
 
 return [
-    'id' => 'bedsheet',
+    'id' => 'app-frontend',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
+    'timeZone' => 'Europe/Moscow',
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-frontend',
